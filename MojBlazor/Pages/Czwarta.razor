@@ -1,0 +1,79 @@
+﻿@page "/czwarta"
+
+<PageTitle>Czwarta</PageTitle>
+
+<h1>Kalendarz</h1>
+
+    <p>Poniżej dosyć prosty kalendarz <span class="red">z przygotowanymi wydarzeniami</span></p>
+
+@code {
+	string monthName = "";
+	DateTime monthEnd;
+	int monthsAway = 0;
+	int numDummyColumn = 0;
+	int year = 2024;
+	int month = 0;
+	List<CalendarItem> items = new List<CalendarItem>();
+	protected override void OnInitialized()
+	{
+		items.Add(new CalendarItem(new DateTime(2024, 6, 14), "Euro 2024 mecz otwarcia: Niemcy - Szkocja"));
+		items.Add(new CalendarItem(new DateTime(2024, 6, 16), "Mecz Polska - Holandia"));
+		items.Add(new CalendarItem(new DateTime(2024, 6, 18), "Test z J. angielskiego"));
+		items.Add(new CalendarItem(new DateTime(2024, 6, 24), "Początek sesji letniej"));
+		items.Add(new CalendarItem(new DateTime(2024, 12, 25), "Boże Narodzenie"));
+		items.Add(new CalendarItem(new DateTime(2025, 1, 1), "Nowy Rok"));
+		CreateMonth();
+	}
+
+	void CreateMonth()
+	{
+		var tempDate = DateTime.Now.AddMonths(monthsAway);
+		month = tempDate.Month;
+		year = tempDate.Year;
+
+		DateTime monthStart = new DateTime(year, month, 1);
+		monthEnd = monthStart.AddMonths(1).AddDays(-1);
+		monthName = monthStart.Month switch
+		{
+			1 => "Styczeń",
+			2 => "Luty",
+			3 => "Marzec",
+			4 => "Kwiecień",
+			5 => "Maj",
+			6 => "Czerwiec",
+			7 => "Lipiec",
+			8 => "Sierpień",
+			9 => "Wrzesień",
+			10 => "Październik",
+			11 => "Listopad",
+			12 => "Grudzień",
+			_ => ""
+		};
+
+		numDummyColumn = (int)monthStart.DayOfWeek -1;
+	}
+}
+
+<button @onclick="() => { monthsAway--; CreateMonth(); }"> <i class="bi bi-caret-left-fill"></i>Poprzedni miesiąc</button>
+<h2>@monthName, @year</h2>
+<button @onclick="() => { monthsAway++; CreateMonth(); }">Następny miesiąc<i class="bi bi-caret-right-fill"></i></button>
+
+<section>
+	@for (int i = 0; i < numDummyColumn; i++)
+	{
+		<div></div>
+	}
+	@for (int i = 1; i <= monthEnd.Day; i++)
+	{
+		var calendarItem =
+		items.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
+
+		<div>
+			<h2>@i</h2>
+			@if (calendarItem != null)
+			{
+				<p>@calendarItem.Name</p>
+			}
+		</div>
+	}
+</section>
